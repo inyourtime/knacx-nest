@@ -15,15 +15,19 @@ export class ProductService {
     @Inject('CACHE_MANAGER') private cacheManager: Cache,
   ) {}
 
-  create(createProductDto: CreateProductDto) {
+  async create(createProductDto: CreateProductDto) {
     const product = this.productRepository.create({ ...createProductDto });
-    return this.productRepository.save(product);
+    const savedProduct = this.productRepository.save(product);
+
+    // clear cache
+    await this.cacheManager.del('products');
+
+    return savedProduct;
   }
 
   async findAll() {
     const cache = await this.cacheManager.get('products');
     if (cache) {
-      console.log('from cache');
       return cache;
     }
 
@@ -47,6 +51,9 @@ export class ProductService {
     if (affected === 0) {
       throw new BadRequestException();
     }
+
+    // clear cache
+    await this.cacheManager.del('products');
   }
 
   async remove(id: number) {
@@ -54,6 +61,9 @@ export class ProductService {
     if (affected === 0) {
       throw new BadRequestException();
     }
+
+    // clear cache
+    await this.cacheManager.del('products');
   }
 
   async exportCsv() {
