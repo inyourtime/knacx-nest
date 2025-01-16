@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  mysql1:
+    platform: linux/x86_64
+    image: mysql:8
+    container_name: nest1_mysql_8
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: shop1
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user_password
+    ports:
+      - '3306:3306'
+    volumes:
+      - nest1_mysql_8:/var/lib/mysql
+
+  mysql2:
+    platform: linux/x86_64
+    image: mysql:8
+    container_name: nest2_mysql_8
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: shop2
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user_password
+    ports:
+      - '3307:3306'
+    volumes:
+      - nest2_mysql_8:/var/lib/mysql
+
+  redis:
+    container_name: cache
+    image: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
+
+volumes:
+  nest1_mysql_8:
+    driver: local
+  nest2_mysql_8:
+    driver: local
+  redis:
+    driver: local
